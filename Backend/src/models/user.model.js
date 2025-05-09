@@ -15,9 +15,18 @@ const userSchema=new mongoose.Schema({
         required:[true,"password is required"],
         minlength:[7,"minimum length should be 7"]
     },
+    phoneNumber:{
+        type:Number,
+        required:[true,"phone number is required"],
+        minlength:[10,"minimum length should be 10"],
+    },
     cartData:{
         type:Object,
         default:{}
+    },
+    tokenVersion:{
+        type:Number,
+        default:0
     },
     role:{
         type:String,
