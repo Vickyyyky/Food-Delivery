@@ -5,12 +5,12 @@ const { generateToken } = require("../utils/jwt.utils");
 
 
 const registerUser=asyncHandler(async(req,res)=>{
-    const {name,email,password}=req.body;
+    const {name,email,password,phoneNumber}=req.body;
 
     let existingUser=await userCollection.findOne({email});
     if(existingUser) throw new ErrorHandler("Email already exists",400);
 
-    let newUser=await userCollection.create({name,email,password});
+    let newUser=await userCollection.create({name,email,password,phoneNumber});
     res.status(201).json({
         success:true,
         message:"User Registered Successfully",
@@ -55,7 +55,20 @@ let logout=asyncHandler(async(req,res)=>{
     res.status(200).json({success:true,message:"user logout"});
 });
 
-const updateUserProfile=asyncHandler(async(req,res)=>{});  //we can update name,email and phone number
+const updateUserProfile=asyncHandler(async(req,res)=>{
+    const{_id}=req.myUser;
+const {name,email,phoneNumber}=req.body;
+
+const updatedUser=await userCollection.findByIdAndUpdate(
+    {_id},
+    {$set:{name,email,phoneNumber}},
+    {new:true},
+);
+res.status(200).json({
+    success:true,
+    message:"user updated Succesfully",
+    data:updatedUser,
+})});  //we can update name,email and phone number
 
 
 const updateUserPassword=asyncHandler(async(req,res)=>{}); //TODO
@@ -63,11 +76,26 @@ const updateUserPassword=asyncHandler(async(req,res)=>{}); //TODO
 
 const deleteUserProfile=asyncHandler(async(req,res)=>{
     const { _id }=req.myUser; //this we will get from authenticate middleware
-}); //delete the profile
+    let deletedUser=await userCollection.findByIdAndDelete({_id}); //findone and deleteone
+    if(!deletedUser) throw new ErrorHandler("user not found",404);
+    res.status(200).json({
+        success:true,
+        message:"user deleted Succesfully",
+        data:deletedUser,
+    });
+}); //delete the profile 
 
-const getLoggedInUserProfile=asyncHandler(async(req,res)=>{}); //in the frontend
+const getLoggedInUserProfile=asyncHandler(async(req,res)=>{
+    res.status(200).json({
+        success:true,
+        userDetails:req.myUser,
+    })
+}); //in the frontend
 module.exports={
     registerUser,
     loginUser,
-    logout
+    logout,
+    deleteUserProfile,
+    getLoggedInUserProfile,
+    updateUserProfile,
 };

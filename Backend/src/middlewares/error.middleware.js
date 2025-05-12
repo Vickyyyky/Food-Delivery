@@ -1,4 +1,9 @@
 const error=(err,req,res,next)=>{
+    //! validation error
+    if(err.name=="ValidationError"){
+        err.statusCode=400;
+        err.message=Object.values(err.errors).map((ele)=>ele.message);
+    }
     //! global error handler
 
     err.message=err.message || "Internal Server Error";
@@ -6,7 +11,7 @@ const error=(err,req,res,next)=>{
     res.status(err.statusCode).json({
         success:false,
         message:err.message,
-        errObj:err,
+        // errObj:err,
     });
 };
 module.exports=error;
