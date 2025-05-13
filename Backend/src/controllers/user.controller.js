@@ -56,13 +56,13 @@ let logout=asyncHandler(async(req,res)=>{
 });
 
 const updateUserProfile=asyncHandler(async(req,res)=>{
-    const{_id}=req.myUser;
+    const{_id}=req.myUser; // logged in user
 const {name,email,phoneNumber}=req.body;
 
 const updatedUser=await userCollection.findByIdAndUpdate(
-    {_id},
-    {$set:{name,email,phoneNumber}},
-    {new:true},
+    {_id}, //filter
+    {$set:{name,email,phoneNumber}}, //updation
+    {new:true}, // it return ths updated document=>options
 );
 res.status(200).json({
     success:true,
@@ -71,7 +71,17 @@ res.status(200).json({
 })});  //we can update name,email and phone number
 
 
-const updateUserPassword=asyncHandler(async(req,res)=>{}); //TODO
+const updateUserPassword=asyncHandler(async(req,res)=>{
+    let{newPassword}=req.body;
+    let user=await userCollection.findById(req.myUser._id); //authenticate middleware
+    user.password=newPassword; //assigning the value
+    await user.save(); //save the data in the db
+
+    res.status(200).json({
+        success:true,
+        message:"password updated succesfully",
+    });
+}); //TODO
 
 
 const deleteUserProfile=asyncHandler(async(req,res)=>{
@@ -98,4 +108,5 @@ module.exports={
     deleteUserProfile,
     getLoggedInUserProfile,
     updateUserProfile,
+    updateUserPassword,
 };
