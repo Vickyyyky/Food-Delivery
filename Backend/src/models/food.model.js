@@ -18,7 +18,7 @@ const foodSchema= new mongoose.Schema(
     image:
         [
             {
-                url:{
+                secure_url:{
                     type:String,
                 },
                 asset_id:{
