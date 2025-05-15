@@ -53,4 +53,16 @@ exports.getFoods=AsyncHandler(async(req,res)=>{
   });
 });
 
-exports.getSingleFood=AsyncHandler(async(req,res)=>{});
+exports.getSingleFood=AsyncHandler(async(req,res)=>{
+  console.log(req.params);
+    let extractedID=req.params.id;
+    console.log(extractedID);
+
+    let food =await foodCollection.findOne({ _id:extractedID});
+
+    if(!food){
+        return res.status(404).json({message:"no food found"})
+    }
+    res.status(200).json({success:true,message:"food fetched succesfully",food});
+    // res.send(food);
+});
