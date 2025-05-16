@@ -1,6 +1,7 @@
 const AsyncHandler = require("express-async-handler");
 const foodCollection=require("../models/food.model");
-const { uploadImgOnCloudinary } = require("../utils/cloudinary.utils");
+const { uploadImgOnCloudinary ,deleteImgFromCloudinary} = require("../utils/cloudinary.utils");
+
 const ErrorHandler=require("../middlewares/error.middleware");
 
 exports.addFood=async(req,res)=>{
@@ -34,12 +35,72 @@ res.json({
 });
 };
 
-exports.updateFoodDetails=AsyncHandler(async(req,res)=>{});
+exports.updateFoodDetails=AsyncHandler(async(req,res)=>{
+  let {name,description,price,category}=req.body;
+  let updateFood=await foodCollection.findByIdAndUpdate(
+    req.params.id,
+    {
+      name,
+      description,
+      price,
+      category,
+    },
+    { new: true }
+  );
+  if(!updateFood) throw new ErrorHandler("food not found",404);
+  res.json({
+    success:true,
+    message:"food updated successfully",
+    data:updateFood,
+  });
+});
 
-exports.updateFoodImage=AsyncHandler(async(req,res)=>{});
+exports.updateFoodImage=AsyncHandler(async(req,res)=>{
+  let {id}=req.params;
+  let food=await foodCollection.findById(id);
+  let public_id=food.image[0].public_id;
+  let deleteimage=await deleteImgFromCloudinary(public_id);
+  let localFilePath=req.file.path;
+  let uploadResponse=await uploadImgOnCloudinary(localFilePath);
+  
+  console.log(public_id)
+  // console.log(food);
+ 
+  food.image[0].secure_url=uploadResponse?.secure_url;
+  food.image[0].asset_id=uploadResponse?.asset_id;
+  food.image[0].public_id=uploadResponse?.public_id;
+
+  await food.save();
+  res.json({
+    success:true,
+    message:"food image updated successfully",
+    data:food,
+  });
+});
 
 
-exports.deleteFood=AsyncHandler(async(req,res)=>{});
+exports.deleteFood=AsyncHandler(async(req,res)=>{
+  let {id}=req.params;
+  let food=await foodCollection.findOne({_id:id});
+  let public_id=food.image[0].public_id;
+  console.log(public_id)
+  // console.log(food);
+  let deleteimage=await deleteImgFromCloudinary(public_id);
+  let deletedFood=await foodCollection.findByIdAndDelete(id);
+  res.json({
+    success:true,
+    message:"food deleted successfully",
+    data:deletedFood,
+  });
+
+});
+/*
+{
+_id:605c72f8e3b0a2d1f4c8b5a1
+name: 'Pizza',
+description: 'Delicious cheese pizza',
+}
+*/
 
 
 exports.getFoods=AsyncHandler(async(req,res)=>{

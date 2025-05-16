@@ -13,6 +13,12 @@ let uploadImgOnCloudinary=asyncHandler(async(path)=>{
    return result;
 });
 
+const deleteImgFromCloudinary=asyncHandler(async(id)=>{
+   if(id===null || id ===undefined) return null;
+   let result=await cloud.uploader.destroy(id);
+   return result;
+});
 
 
-module.exports={uploadImgOnCloudinary};
+
+module.exports={uploadImgOnCloudinary,deleteImgFromCloudinary};
