@@ -27,6 +27,7 @@ const foodSchema= new mongoose.Schema(
                 public_id:{
                     type:String,
                 },
+                _id:false
             },
         ],
     
@@ -35,6 +36,6 @@ const foodSchema= new mongoose.Schema(
            required:true,
     },
 },
-{timestamps:true});
+{timestamps:true,minimize:false});
 
 module.exports=mongoose.model("Food",foodSchema);
