@@ -1,81 +1,93 @@
-# API Documentation
+# Food Delivery App - Backend
 
-## User Routes (`/users/v1`)
-
-| Method | Endpoint           | Middleware     | Description                        | Request Body / Params                |
-|--------|--------------------|---------------|------------------------------------|--------------------------------------|
-| POST   | `/register`        | None          | Register a new user                | `{ name, email, password, phoneNumber }` |
-| POST   | `/login`           | None          | Login user                         | `{ email, password }`                |
-| GET    | `/logout`          | authenticate  | Logout the logged-in user          | Cookie required                      |
-| DELETE | `/delete-me`       | authenticate  | Delete the logged-in user's profile| Cookie required                      |
-| GET    | `/me`              | authenticate  | Get logged-in user's profile       | Cookie required                      |
-| PATCH  | `/update`          | authenticate  | Update user profile (partial)      | `{ name, email, phoneNumber }`       |
-| PATCH  | `/update-password` | authenticate  | Update user password               | `{ newPassword }`                    |
-
-### User Route Details
-
-- **Register**: Creates a new user account.
-- **Login**: Authenticates user and sets a secure HTTP-only cookie.
-- **Logout**: Clears the authentication cookie and invalidates the session.
-- **Delete Profile**: Deletes the currently logged-in user's profile.
-- **Get Profile**: Returns details of the currently logged-in user.
-- **Update Profile**: Updates name, email, or phone number.
-- **Update Password**: Changes the user's password.
+This is the backend for the Food Delivery App, providing RESTful APIs for user authentication and food management, including image uploads via Cloudinary.
 
 ---
 
-## Food Routes (`/foods/v1`)
+## 🚀 Tech Stack
 
-| Method | Endpoint           | Middleware         | Description                        | Request Body / Params                |
-|--------|--------------------|-------------------|------------------------------------|--------------------------------------|
-| POST   | `/add-food`        | upload.single("image") | Add a new food item (with image upload) | `{ name, description, price, category }` + `image` (file) |
-| GET    | `/all-foods`       | None              | Get all food items                 | -                                    |
-| GET    | `/single-food/:id` | None              | Get a single food item by ID       | `:id` (food ID)                      |
-
-### Food Route Details
-
-- **Add Food**: Adds a new food item with image upload (uses Cloudinary).
-- **Get All Foods**: Returns a list of all food items.
-- **Get Single Food**: Returns details of a food item by its ID.
+- **Node.js** with **Express**
+- **MongoDB** (Mongoose)
+- **Cloudinary** for image uploads
 
 ---
 
-## Middleware
+## 📂 Project Structure
 
-- **authenticate**: Checks if the user is authenticated (typically via JWT in cookie).
-- **upload.single("image")**: Handles single image file upload for food items.
-
----
-
-## Example Usage
-
-### Register User
-
-```http
-POST /users/v1/register
-Content-Type: application/json
-
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "yourpassword",
-  "phoneNumber": "1234567890"
-}
 ```
-
-### Add Food
-
-```http
-POST /foods/v1/add-food
-Content-Type: multipart/form-data
-
-name: "Pizza"
-description: "Delicious cheese pizza"
-price: 10
-category: "Fast Food"
-image: (file)
+Backend/
+│
+├── src/
+│   ├── controllers/
+│   │   ├── user.controller.js
+│   │   └── food.controller.js
+│   ├── middlewares/
+│   ├── models/
+│   ├── routers/
+│   └── utils/
+├── .gitignore
+├── package.json
+└── ...
 ```
 
 ---
 
-> **Note:** All endpoints are prefixed with `/users/v1` or `/foods/v1` as shown above.
+## 🛠️ Setup
+
+1. **Install dependencies:**
+   ```sh
+   npm install
+   ```
+
+2. **Configure your environment variables** for MongoDB and Cloudinary in a `.env` file (not included in this repo).
+
+3. **Start the server:**
+   ```sh
+   npm start
+   ```
+   The server runs on `http://localhost:9000` by default.
+
+---
+
+## 📑 API Endpoints
+
+### User Routes (`/users/v1`)
+
+| Method | Endpoint           | Middleware     | Description                        |
+|--------|--------------------|---------------|------------------------------------|
+| POST   | `/register`        | None          | Register a new user                |
+| POST   | `/login`           | None          | Login user                         |
+| GET    | `/logout`          | authenticate  | Logout user                        |
+| DELETE | `/delete-me`       | authenticate  | Delete user profile                |
+| GET    | `/me`              | authenticate  | Get user profile                   |
+| PATCH  | `/update`          | authenticate  | Update user profile                |
+| PATCH  | `/update-password` | authenticate  | Change password                    |
+
+---
+
+### Food Routes (`/foods/v1`)
+
+| Method | Endpoint                | Middleware                | Description                        |
+|--------|-------------------------|---------------------------|------------------------------------|
+| POST   | `/add-food`             | upload.single("image")    | Add new food (with image)          |
+| GET    | `/all-foods`            | None                      | Get all foods                      |
+| GET    | `/single-food/:id`      | None                      | Get food by ID                     |
+| DELETE | `/delete-food/:id`      | None                      | Delete food by ID                  |
+| PATCH  | `/update-food/:id`      | None                      | Update food details                |
+| PATCH  | `/update-image/:id`     | upload.single("image")    | Update food image                  |
+
+---
+
+## 📝 Notes
+
+- `.env` and `node_modules` are excluded from version control.
+- Make sure to set up your own Cloudinary account for image uploads.
+- Ensure MongoDB is running locally or update the connection string for a remote database.
+
+---
+
+## 📧 Contact
+
+For any questions or support, please open an issue or contact the maintainer at **vk2388275@gmail.com**.
+
+---
