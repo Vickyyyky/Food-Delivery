@@ -38,6 +38,7 @@ const userSchema=new mongoose.Schema({
 //! password hashing => prehook
 
 userSchema.pre("save",async function(){
+    if(!this.isModified("password")) return; //if password is not modified then return
     let salt=await bcryptjs.genSalt(12); //random string
     let hashedPassword=await bcryptjs.hash(this.password,salt);
     this.password=hashedPassword;
