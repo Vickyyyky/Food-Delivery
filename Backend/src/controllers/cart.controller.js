@@ -2,6 +2,7 @@
 const foodCollection = require("../models/food.model");
 const userCollection=require("../models/user.model");
 const asyncHandler = require("express-async-handler");  
+const ErrorHandler = require("../utils/ErrorHandler");
 
 
 const addFoodToCart = asyncHandler(async (req, res) => {

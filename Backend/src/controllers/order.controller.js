@@ -31,10 +31,10 @@ const placeOrder = asyncHandler(async (req, res) => {
   for (let foodItem of foodItems) {
     // console.log(foodItem);
     let quantity = cartData[foodItem._id];
-    let price = foodItem.price;
+    let price = parseInt(foodItem.price);
     let itemPrice = quantity * price;
 
-    total += itemPrice;
+    total += itemPrice.toFixed(2);
 
     items.push({
       food: foodItem.name,
@@ -72,6 +72,10 @@ const placeOrder = asyncHandler(async (req, res) => {
     cancel_url: `http://localhost:9000/orders/v1/verify-order?orderId=${newOrder._id}&success=false`,
   });
   console.log(session);
+
+  //clear the cart
+  await userCollection.findByIdAndUpdate(currentUser._id,  {cartData: {},});
+
   res.status(200).json({
     success: true,
     message: "order placed successfully",
@@ -81,6 +85,47 @@ const placeOrder = asyncHandler(async (req, res) => {
   });
 });
 
+const verifyOrder = asyncHandler(async (req, res) => {
+ console.log(req.query);
+ let orderId = req.query.orderId;
+ let flag = req.query.success;
+ console.log(flag);
+
+ let order = await orderCollection.findById(orderId);
+ if (flag == "true"){
+  order.payment=true;
+  order.status="processing";
+  await order.save();
+  res.status(200).json({
+    success: true,
+    message: "order placed successful",
+  });
+ } else{
+  order.payment=false;
+  order.status="canceled";
+  await order.save();
+  res.status(402).json({
+    success: true,
+    message: "payment failed",
+  });
+ }
+});
+
+const getOrders=asyncHandler(async(req,res)=>{
+let currentUserId=req.myUser._id;
+
+let orders=await orderCollection.find({userId:currentUserId});
+if(orders.length==0) throw new ErrorHandler("No orders found",404);
+res.status(200).json({
+  success:true,
+  message:"Orders fetched successfully",
+  count:orders.length,
+  data:orders
+});
+});
+
 module.exports = {
   placeOrder,
+  verifyOrder,
+  getOrders
 };
