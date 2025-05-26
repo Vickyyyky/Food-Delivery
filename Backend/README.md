@@ -1,6 +1,6 @@
 # Food Delivery App - Backend
 
-This is the backend for the Food Delivery App, providing RESTful APIs for user authentication and food management, including image uploads via Cloudinary.
+This is the backend for the Food Delivery App, providing RESTful APIs for user authentication, food management, cart, and order processing, including image uploads via Cloudinary.
 
 ---
 
@@ -18,15 +18,35 @@ This is the backend for the Food Delivery App, providing RESTful APIs for user a
 Backend/
 │
 ├── src/
+│   ├── config/
+│   │   ├── cloudinary.js
+│   │   └── database.js
 │   ├── controllers/
-│   │   ├── user.controller.js
-│   │   └── food.controller.js
+│   │   ├── cart.controller.js
+│   │   ├── food.controller.js
+│   │   ├── order.controller.js
+│   │   └── user.controller.js
 │   ├── middlewares/
+│   │   ├── authenticate.middleware.js
+│   │   ├── error.middleware.js
+│   │   └── multer.middleware.js
 │   ├── models/
+│   │   ├── food.model.js
+│   │   ├── order.model.js
+│   │   └── user.model.js
 │   ├── routers/
-│   └── utils/
+│   │   ├── cart.routes.js
+│   │   ├── food.routes.js
+│   │   ├── order.routes.js
+│   │   └── user.routes.js
+│   ├── utils/
+│   │   ├── cloudinary.utils.js
+│   │   └── ErrorHandler.js
+│   └── uploads/
 ├── .gitignore
+├── app.js
 ├── package.json
+├── server.js
 └── ...
 ```
 
@@ -39,7 +59,7 @@ Backend/
    npm install
    ```
 
-2. **Configure your environment variables** for MongoDB and Cloudinary in a `.env` file (not included in this repo).
+2. **Configure your environment variables** for MongoDB, Cloudinary, and Stripe in a `.env` file (not included in this repo).
 
 3. **Start the server:**
    ```sh
@@ -78,10 +98,30 @@ Backend/
 
 ---
 
+### Cart Routes (`/carts/v1`)
+
+| Method | Endpoint         | Middleware     | Description                        |
+|--------|------------------|---------------|------------------------------------|
+| PATCH  | `/add`           | authenticate  | Add food to cart                   |
+| PATCH  | `/remove`        | authenticate  | Remove food from cart              |
+| GET    | `/get-cart`      | authenticate  | Get current user's cart            |
+
+---
+
+### Order Routes (`/orders/v1`)
+
+| Method | Endpoint           | Middleware     | Description                        |
+|--------|--------------------|---------------|------------------------------------|
+| POST   | `/create-order`    | authenticate  | Place a new order                  |
+| PATCH  | `/verify-order`    | authenticate  | Verify payment and update order    |
+| GET    | `/get-orders`      | authenticate  | Get all orders for current user    |
+
+---
+
 ## 📝 Notes
 
 - `.env` and `node_modules` are excluded from version control.
-- Make sure to set up your own Cloudinary account for image uploads.
+- Make sure to set up your own Cloudinary and Stripe accounts for image uploads and payments.
 - Ensure MongoDB is running locally or update the connection string for a remote database.
 
 ---
